@@ -1,0 +1,17 @@
+[workspace]
+resolver = "2"
+members = ["front", "mid", "back"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+
+[package]
+name = "language"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+front = { path = "front" }
+mid = { path = "mid" }
+back = { path = "back" }
