@@ -1,8 +1,4 @@
-//! Structured diagnostics: an error carries a message, spans into the source,
-//! and optional notes; rendering turns that into an annotated source snippet.
-//!
-//! This module knows about [`Span`] and nothing else — no tokens, no AST — so
-//! every later stage can report errors the same way.
+
 
 use std::collections::BTreeMap;
 use std::fmt::Write as _;
@@ -11,7 +7,7 @@ use std::ops::Range;
 
 use crate::span::Span;
 
-/// Columns a `\t` advances to in rendered source lines.
+
 const TAB_WIDTH: usize = 4;
 
 const RESET: &str = "\x1b[0m";
@@ -383,6 +379,13 @@ impl SourceFile {
                 .filter(|&(_, ch)| ch == '\n')
                 .map(|(i, _)| i + 1),
         );
+        // A file ending in a newline would otherwise gain an empty final line,
+        // and every unexpected-EOF error — the most common parser error there
+        // is — would point a caret at that blank line instead of at the last
+        // line with code on it.
+        if src.ends_with('\n') {
+            line_starts.pop();
+        }
         SourceFile {
             name: name.into(),
             src,
@@ -469,11 +472,6 @@ impl Diagnostics {
 
     pub fn push(&mut self, diagnostic: Diagnostic) {
         self.items.push(diagnostic);
-    }
-
-    pub fn error(&mut self, message: impl Into<String>) -> &mut Diagnostic {
-        self.items.push(Diagnostic::error(message));
-        self.items.last_mut().expect("just pushed")
     }
 
     pub fn len(&self) -> usize {
@@ -742,6 +740,30 @@ warning: late line
         ] {
             let _ = Diagnostic::error("x").with_bare_label(span).render(&file, false);
         }
+    }
+
+    /// A trailing newline must not create a blank final line for EOF errors to
+    /// point at; the caret belongs just past the last line with code on it.
+    #[test]
+    fn eof_in_a_newline_terminated_file_points_at_the_last_real_line() {
+        let src = "fn f() {\n  1\n";
+        let file = SourceFile::new("t.lang", src);
+        assert_eq!(file.line_count(), 2);
+
+        let rendered = Diagnostic::error("unexpected end of file")
+            .with_label(Span::at(src.len()), "expected `}`")
+            .render(&file, false);
+
+        assert_eq!(
+            rendered,
+            "\
+error: unexpected end of file
+ --> t.lang:2:4
+  |
+2 |   1
+  |    ^ expected `}`
+"
+        );
     }
 
     #[test]
