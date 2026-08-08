@@ -51,11 +51,7 @@ pub enum Token {
     Eof,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Span {
-    pub start: usize,
-    pub end: usize,
-}
+pub use crate::span::Span;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct SpannedToken {
