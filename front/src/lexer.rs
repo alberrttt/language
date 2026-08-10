@@ -244,6 +244,7 @@ fn keyword_or_ident(s: String) -> Token {
         "false" => Token::False,
         "does" => Token::Does,
         "enum" => Token::Enum,
+        "pub" => Token::Pub,
         _ => Token::Ident(s),
     }
 }

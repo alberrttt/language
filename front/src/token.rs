@@ -18,6 +18,7 @@ pub enum Token {
     False,
     Does,
     Enum,
+    Pub,
 
     // Delimiters
     LParen,

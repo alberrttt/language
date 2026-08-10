@@ -1,10 +1,16 @@
+pub mod ast;
 pub mod diag;
 pub mod lexer;
 pub mod span;
 pub mod token;
-pub mod ast;
+pub mod parser;
+pub use ast::{
+    BinOp, Block, EnumDef, FnDef, Ident, Item, LetStmt, MatchArm, Module, Param, Pattern,
+    ReturnStmt, Stmt, Term, UnOp, Variant,
+};
 pub use diag::{Diagnostic, Diagnostics, Label, LabelStyle, Location, Severity, SourceFile};
 pub use lexer::Lexer;
+pub use parser::{Parser, parse_source};
 pub use span::Span;
 pub use token::{SpannedToken, Token};
 

@@ -1,0 +1,19 @@
+pub enum Nat {
+    Zero,
+    Succ(Nat)
+}
+
+
+fn add(a: Nat, b: Nat) -> Nat {
+    match a {
+        Zero => b,
+        Succ(n) => Succ(add(n,b)), 
+    }
+}
+
+
+
+fn main() {
+    let num: Succ(Zero) = 1;
+    print(num);
+}
