@@ -1,8 +1,12 @@
+pub mod diag;
 pub mod lexer;
+pub mod span;
 pub mod token;
-
+pub mod ast;
+pub use diag::{Diagnostic, Diagnostics, Label, LabelStyle, Location, Severity, SourceFile};
 pub use lexer::Lexer;
-pub use token::{Span, SpannedToken, Token};
+pub use span::Span;
+pub use token::{SpannedToken, Token};
 
 #[cfg(test)]
 mod tests {
